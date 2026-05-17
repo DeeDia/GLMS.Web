@@ -1,0 +1,27 @@
+﻿@model GLMS.Web.Models.Client
+
+@{
+    ViewData["Title"] = "Add Client";
+}
+
+<h2>Add New Client</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ContactDetails" class="form-label"></label>
+        <input asp-for="ContactDetails" class="form-control" />
+        <span asp-validation-for="ContactDetails" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Region" class="form-label"></label>
+        <input asp-for="Region" class="form-control" />
+        <span asp-validation-for="Region" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success">Save Client</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

@@ -1,0 +1,95 @@
+﻿@model GLMS.Web.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "New Service Request";
+    var rate = (decimal)ViewBag.ExchangeRate;
+}
+
+<h2>New Service Request</h2>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        @foreach (var error in ViewData.ModelState.Values
+            .SelectMany(v => v.Errors))
+        {
+            <p>@error.ErrorMessage</p>
+        }
+    </div>
+}
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label asp-for="ContractId" class="form-label">Contract</label>
+        <select asp-for="ContractId" asp-items="ViewBag.Contracts"
+                class="form-select">
+            <option value="">-- Select Active Contract --</option>
+        </select>
+        <span asp-validation-for="ContractId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description"
+                  class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <!-- Live exchange rate display -->
+    <div class="alert alert-info">
+        <strong>Live Rate:</strong>
+        1 USD = R <span id="rateDisplay">@rate.ToString("N4")</span> ZAR
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="CostUSD" class="form-label"></label>
+        <input asp-for="CostUSD" class="form-control"
+               type="number" step="0.01" min="0.01"
+               id="costUsd" placeholder="Enter amount in USD" />
+        <span asp-validation-for="CostUSD" class="text-danger"></span>
+    </div>
+
+    <!-- Auto-calculated ZAR field — read only -->
+    <div class="mb-3">
+        <label class="form-label">Cost (ZAR) — auto calculated</label>
+        <input type="text" id="costZarDisplay"
+               class="form-control" readonly
+               placeholder="Will calculate automatically" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            @foreach (var s in Enum.GetValues(
+                        typeof(GLMS.Web.Models.RequestStatus)))
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Request</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+<!-- JavaScript that auto-calculates ZAR as the user types -->
+<script>
+    // Store the rate from the server in a JS variable
+    const rate = @rate;
+
+    const usdInput   = document.getElementById('costUsd');
+    const zarDisplay = document.getElementById('costZarDisplay');
+
+    // Every time the user types in the USD field, recalculate ZAR
+    usdInput.addEventListener('input', function () {
+        const usdValue = parseFloat(this.value);
+
+        if (!isNaN(usdValue) && usdValue > 0) {
+            const zarValue = (usdValue * rate).toFixed(2);
+            zarDisplay.value = 'R ' + zarValue;
+        } else {
+            zarDisplay.value = '';
+        }
+    });
+</script>

@@ -1,0 +1,531 @@
+﻿@{
+    ViewData["Title"] = "GLMS — Global Logistics Management System";
+    Layout = "_Layout";
+}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --navy: #0D1B2A;
+        --blue: #1B4F72;
+        --lblue: #2E86C1;
+        --teal: #148F77;
+        --gold: #F39C12;
+        --lgray: #F4F6F8;
+        --mgray: #BDC3C7;
+        --dgray: #5D6D7E;
+        --white: #FFFFFF;
+    }
+
+    .glms-hero {
+        background: var(--navy);
+        position: relative;
+        overflow: hidden;
+        padding: 80px 0 70px;
+    }
+
+        .glms-hero::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1B4F72 0%, transparent 70%);
+            top: -180px;
+            right: -100px;
+            opacity: 0.5;
+        }
+
+        .glms-hero::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #148F77 0%, transparent 70%);
+            bottom: -100px;
+            left: 5%;
+            opacity: 0.35;
+        }
+
+    .glms-hero-topbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #F39C12, #148F77, #2E86C1);
+    }
+
+    .glms-hero-inner {
+        position: relative;
+        z-index: 2;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 32px;
+    }
+
+    .glms-badge {
+        display: inline-block;
+        background: rgba(243,156,18,0.15);
+        border: 1px solid rgba(243,156,18,0.4);
+        color: #F39C12;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        padding: 5px 14px;
+        border-radius: 20px;
+        margin-bottom: 22px;
+    }
+
+    .glms-hero h1 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 74px;
+        color: #FFFFFF;
+        line-height: 1.0;
+        letter-spacing: 0.02em;
+        margin: 0 0 8px;
+    }
+
+        .glms-hero h1 span {
+            color: #F39C12;
+        }
+
+    .glms-hero-sub {
+        font-size: 16px;
+        color: #BDC3C7;
+        max-width: 560px;
+        line-height: 1.65;
+        margin: 18px 0 36px;
+        font-weight: 300;
+    }
+
+    .glms-hero-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn-gold {
+        background: #F39C12;
+        color: #0D1B2A;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 12px 28px;
+        border-radius: 6px;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: opacity .2s;
+    }
+
+        .btn-gold:hover {
+            opacity: .85;
+            color: #0D1B2A;
+            text-decoration: none;
+        }
+
+    .btn-outline-light {
+        background: transparent;
+        color: #FFFFFF;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 11px 26px;
+        border-radius: 6px;
+        border: 1.5px solid rgba(255,255,255,0.3);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        transition: border-color .2s;
+    }
+
+        .btn-outline-light:hover {
+            border-color: rgba(255,255,255,0.8);
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+
+    .glms-stats {
+        background: #FFFFFF;
+        border-bottom: 1px solid #E8ECF0;
+    }
+
+    .glms-stats-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 32px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-item {
+        padding: 28px 24px;
+        border-right: 1px solid #E8ECF0;
+        text-align: center;
+    }
+
+        .stat-item:last-child {
+            border-right: none;
+        }
+
+    .stat-number {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 38px;
+        color: #0D1B2A;
+        line-height: 1;
+    }
+
+        .stat-number span {
+            color: #2E86C1;
+        }
+
+    .stat-label {
+        font-size: 12px;
+        color: #5D6D7E;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 500;
+        margin-top: 5px;
+    }
+
+    
+    .glms-features {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 60px 32px 40px;
+    }
+
+    .section-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #148F77;
+        margin-bottom: 8px;
+    }
+
+    .section-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 36px;
+        color: #0D1B2A;
+        margin: 0 0 36px;
+    }
+
+    .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .feature-card {
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 30px 26px;
+        border: 1px solid #E8ECF0;
+        transition: box-shadow .2s, transform .2s;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .feature-card.c-blue::before {
+            background: #2E86C1;
+        }
+
+        .feature-card.c-teal::before {
+            background: #148F77;
+        }
+
+        .feature-card.c-gold::before {
+            background: #F39C12;
+        }
+
+        .feature-card.c-navy::before {
+            background: #0D1B2A;
+        }
+
+        .feature-card.c-green::before {
+            background: #27AE60;
+        }
+
+        .feature-card.c-purple::before {
+            background: #8E44AD;
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 8px 32px rgba(13,27,42,0.10);
+            transform: translateY(-3px);
+        }
+
+    .feature-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
+
+    .ic-blue {
+        background: rgba(46,134,193,0.12);
+    }
+
+    .ic-teal {
+        background: rgba(20,143,119,0.12);
+    }
+
+    .ic-gold {
+        background: rgba(243,156,18,0.12);
+    }
+
+    .ic-navy {
+        background: rgba(13,27,42,0.08);
+    }
+
+    .ic-green {
+        background: rgba(39,174,96,0.12);
+    }
+
+    .ic-purple {
+        background: rgba(142,68,173,0.12);
+    }
+
+    .feature-card h3 {
+        font-size: 15px;
+        font-weight: 600;
+        color: #0D1B2A;
+        margin: 0 0 8px;
+    }
+
+    .feature-card p {
+        font-size: 13.5px;
+        color: #5D6D7E;
+        line-height: 1.6;
+        margin: 0 0 18px;
+    }
+
+    .feature-link {
+        font-size: 13px;
+        font-weight: 600;
+        color: #2E86C1;
+        text-decoration: none;
+    }
+
+        .feature-link:hover {
+            color: #0D1B2A;
+            text-decoration: none;
+        }
+
+    /* STATUS BAR */
+    .glms-status {
+        background: #0D1B2A;
+        padding: 48px 0;
+        margin-top: 20px;
+    }
+
+    .glms-status-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 24px;
+    }
+
+    .status-left h2 {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 32px;
+        color: #FFFFFF;
+        margin: 0 0 6px;
+    }
+
+    .status-left p {
+        font-size: 14px;
+        color: #BDC3C7;
+        margin: 0;
+    }
+
+    .status-pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .status-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 20px;
+        padding: 7px 16px;
+        font-size: 13px;
+        color: #FFFFFF;
+        font-weight: 500;
+    }
+
+    .pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+    }
+
+    
+    .glms-footer-note {
+        text-align: center;
+        padding: 28px 20px;
+        font-size: 12px;
+        color: #BDC3C7;
+        background: #F4F6F8;
+    }
+
+        .glms-footer-note strong {
+            color: #5D6D7E;
+        }
+</style>
+
+<!-- HERO -->
+<div class="glms-hero">
+    <div class="glms-hero-topbar"></div>
+    <div class="glms-hero-inner">
+        <div class="glms-badge">TechMove Logistics — Enterprise Platform</div>
+        <h1>Global Logistics<br /><span>Management</span><br />System</h1>
+        <p class="glms-hero-sub">
+            A centralised platform for managing international freight contracts,
+            client agreements, and service requests — with live currency
+            conversion and automated SLA tracking.
+        </p>
+        <div class="glms-hero-actions">
+            <a href="/Contracts" class="btn-gold">📋 View Contracts</a>
+            <a href="/ServiceRequests" class="btn-outline-light">⚙️ Service Requests</a>
+            <a href="/Clients" class="btn-outline-light">👥 Clients</a>
+        </div>
+    </div>
+</div>
+
+<!-- STATS -->
+<div class="glms-stats">
+    <div class="glms-stats-inner">
+        <div class="stat-item">
+            <div class="stat-number">4<span>+</span></div>
+            <div class="stat-label">Contract Statuses</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">3<span>+</span></div>
+            <div class="stat-label">Currency Fields</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">13<span>/13</span></div>
+            <div class="stat-label">Unit Tests Passing</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">100<span>%</span></div>
+            <div class="stat-label">PDF Upload Support</div>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<div class="glms-features">
+    <div class="section-label">Platform Capabilities</div>
+    <div class="section-title">Everything TechMove Needs</div>
+    <div class="feature-grid">
+
+        <div class="feature-card c-blue">
+            <div class="feature-icon ic-blue">📋</div>
+            <h3>Contract Management</h3>
+            <p>Create and manage freight contracts linked to clients. Track status through Draft, Active, Expired and On Hold with SLA level assignment.</p>
+            <a href="/Contracts" class="feature-link">Manage Contracts →</a>
+        </div>
+
+        <div class="feature-card c-teal">
+            <div class="feature-icon ic-teal">🔍</div>
+            <h3>Search &amp; Filter</h3>
+            <p>Find contracts instantly using LINQ-powered search. Filter by status, start date, and end date across the entire portfolio.</p>
+            <a href="/Contracts" class="feature-link">Search Contracts →</a>
+        </div>
+
+        <div class="feature-card c-gold">
+            <div class="feature-icon ic-gold">📄</div>
+            <h3>PDF Agreement Upload</h3>
+            <p>Attach signed agreement PDFs to every contract. Files are stored securely and available for download from the contract details page.</p>
+            <a href="/Contracts/Create" class="feature-link">Upload Agreement →</a>
+        </div>
+
+        <div class="feature-card c-green">
+            <div class="feature-icon ic-green">⚙️</div>
+            <h3>Service Requests</h3>
+            <p>Raise service requests against active contracts only. The workflow guard blocks requests against Expired or On Hold contracts.</p>
+            <a href="/ServiceRequests" class="feature-link">View Requests →</a>
+        </div>
+
+        <div class="feature-card c-navy">
+            <div class="feature-icon ic-navy">💱</div>
+            <h3>Live Currency Conversion</h3>
+            <p>Enter costs in USD and the system fetches a live exchange rate to automatically calculate and store the ZAR equivalent.</p>
+            <a href="/ServiceRequests/Create" class="feature-link">New Request →</a>
+        </div>
+
+        <div class="feature-card c-purple">
+            <div class="feature-icon ic-purple">✅</div>
+            <h3>Quality Assurance</h3>
+            <p>Business logic protected by 13 automated xUnit tests — covering currency math, file validation, and the workflow guard.</p>
+            <a href="/Contracts" class="feature-link">Explore System →</a>
+        </div>
+
+    </div>
+</div>
+
+<!-- STATUS -->
+<div class="glms-status">
+    <div class="glms-status-inner">
+        <div class="status-left">
+            <h2>System Status</h2>
+            <p>All services operational — Part 2 prototype</p>
+        </div>
+        <div class="status-pills">
+            <div class="status-pill">
+                <div class="pill-dot" style="background:#27AE60"></div>
+                Database Connected
+            </div>
+            <div class="status-pill">
+                <div class="pill-dot" style="background:#27AE60"></div>
+                Currency API Active
+            </div>
+            <div class="status-pill">
+                <div class="pill-dot" style="background:#27AE60"></div>
+                File Upload Ready
+            </div>
+            <div class="status-pill">
+                <div class="pill-dot" style="background:#27AE60"></div>
+                13/13 Tests Passing
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER NOTE -->
+<div class="glms-footer-note">
+    <strong>GLMS — Global Logistics Management System</strong> &nbsp;·&nbsp;
+    TechMove Logistics &nbsp;·&nbsp;
+    Part 2 Prototype &nbsp;·&nbsp;
+    Built with ASP.NET Core MVC + Entity Framework Core + xUnit
+</div>

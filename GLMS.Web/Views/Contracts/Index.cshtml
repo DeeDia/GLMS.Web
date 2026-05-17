@@ -1,0 +1,85 @@
+﻿@model IEnumerable<GLMS.Web.Models.Contract>
+
+@{
+    ViewData["Title"] = "Contracts";
+}
+
+<h2>Contracts</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">
+    + New Contract
+</a>
+
+<!-- Search / Filter Form -->
+<form method="get" asp-action="Index" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Status</label>
+        <select name="statusFilter" class="form-select">
+            <option value="">All Statuses</option>
+            @foreach (var s in ViewBag.StatusList)
+            {
+                <option value="@s"
+                        selected="@(ViewBag.StatusFilter == s ?
+                                                "selected" : null)">
+                @s
+            </option>
+                        }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Start Date From</label>
+        <input type="date" name="startDate"
+               value="@ViewBag.StartDate" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">End Date To</label>
+        <input type="date" name="endDate"
+               value="@ViewBag.EndDate" class="form-control" />
+    </div>
+    <div class="col-md-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-info">Search</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+
+<!-- Results Table -->
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Client</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Service Level</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td>@c.Client?.Name</td>
+                <td>@c.StartDate.ToShortDateString()</td>
+                <td>@c.EndDate.ToShortDateString()</td>
+                <td>
+                    <!-- Colour code the status badge -->
+                    <span class="badge
+                            @(c.Status == GLMS.Web.Models.ContractStatus.Active
+                                                      ? "bg-success"
+                                                      : c.Status == GLMS.Web.Models.ContractStatus.Expired
+                                                          ? "bg-danger"
+                                                          : c.Status == GLMS.Web.Models.ContractStatus.OnHold
+                                                              ? "bg-warning text-dark"
+                                                              : "bg-secondary")">
+                    @c.Status
+                </span>
+            </td>
+            <td>@c.ServiceLevel</td>
+            <td>
+                <a asp-action="Details" asp-route-id="@c.Id"
+                   class="btn btn-sm btn-info">View</a>
+            </td>
+        </tr>
+                }
+    </tbody>
+</table>

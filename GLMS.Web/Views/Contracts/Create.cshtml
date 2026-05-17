@@ -1,0 +1,64 @@
+﻿@model GLMS.Web.Models.Contract
+
+@{
+    ViewData["Title"] = "New Contract";
+}
+
+<h2>New Contract</h2>
+
+<!-- enctype="multipart/form-data" is REQUIRED for file upload -->
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+
+    <div class="mb-3">
+        <label asp-for="ClientId" class="form-label">Client</label>
+        <select asp-for="ClientId" asp-items="ViewBag.Clients"
+                class="form-select">
+            <option value="">-- Select Client --</option>
+        </select>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" class="form-control" type="date" />
+        <span asp-validation-for="StartDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" class="form-control" type="date" />
+        <span asp-validation-for="EndDate" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            @foreach (var s in Enum.GetValues(
+                        typeof(GLMS.Web.Models.ContractStatus)))
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ServiceLevel" class="form-label"></label>
+        <input asp-for="ServiceLevel" class="form-control" />
+        <span asp-validation-for="ServiceLevel" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="SignedAgreementPath" class="form-label">
+            Signed Agreement (PDF only)
+        </label>
+        <!-- name="signedAgreement" matches the parameter
+             in the controller action -->
+        <input type="file" name="signedAgreement"
+               class="form-control" accept=".pdf" />
+        <span asp-validation-for="SignedAgreementPath"
+              class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Contract</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
