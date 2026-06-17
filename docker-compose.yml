@@ -1,0 +1,73 @@
+version: '3.9'
+
+services:
+
+  # Container 1: SQL Server Database
+  sql-server-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "GLMSPass123!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    networks:
+      - glms-network
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd",
+             "-S", "localhost",
+             "-U", "sa",
+             "-P", "GLMSPass123!",
+             "-Q", "SELECT 1",
+             "-No"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+
+  # Container 2: GLMS Web API
+  glms-backend-api:
+    build:
+      context: .
+      dockerfile: GLMS.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=sql-server-db;Database=GLMSApiDb;User Id=sa;Password=GLMSPass123!;TrustServerCertificate=True;MultipleActiveResultSets=true
+      - JwtSettings__Secret=GLMSSecretKeyForTechMoveLogistics2024!
+      - ExchangeRate__ApiKey=bb68b465832e6c9a275fbdd9
+      - ExchangeRate__BaseUrl=https://v6.exchangerate-api.com/v6/
+    ports:
+      - "8080:8080"
+    depends_on:
+      sql-server-db:
+        condition: service_healthy
+    networks:
+      - glms-network
+
+  # Container 3: GLMS MVC Frontend
+  glms-frontend-web:
+    build:
+      context: .
+      dockerfile: GLMS.Web/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ApiSettings__BaseUrl=http://glms-backend-api:8080
+    ports:
+      - "80:8080"
+    depends_on:
+      - glms-backend-api
+    networks:
+      - glms-network
+
+# Named volume for database persistence
+volumes:
+  sqldata:
+
+# Internal network
+networks:
+  glms-network:
+    driver: bridge

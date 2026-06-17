@@ -1,63 +1,48 @@
-﻿using GLMS.Web.Data;
-using GLMS.Web.Models;
+﻿using GLMS.Web.Models;
 using GLMS.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace GLMS.Web.Controllers
 {
-    public class ServiceRequestsController : Controller
+    public class ServiceRequestsController : ApiBaseController
     {
-        private readonly GlmsDbContext _context;
-        private readonly CurrencyService _currencyService;
-
-        public ServiceRequestsController(
-            GlmsDbContext context,
-            CurrencyService currencyService)
-        {
-            _context = context;
-            _currencyService = currencyService;
-        }
+        public ServiceRequestsController(IHttpClientFactory factory)
+            : base(factory) { }
 
         // GET: /ServiceRequests
         public async Task<IActionResult> Index()
         {
-            var requests = await _context.ServiceRequests
-                .Include(r => r.Contract)
-                .ToListAsync();
+            var requests = await ApiGet<List<ServiceRequest>>(
+                "api/servicerequests")
+                ?? new List<ServiceRequest>();
             return View(requests);
         }
 
         // GET: /ServiceRequests/Create
         public async Task<IActionResult> Create()
         {
-            // Fetch the live USD to ZAR rate to show on the form
-            var rate = await _currencyService.GetUsdToZarRateAsync();
+            // Get live rate from the API
+            var rateResult = await ApiGet<CurrencyRateResult>(
+                "api/currency/rate");
+            var rate = rateResult?.Rate ?? 18.50m;
 
-            // Only show ACTIVE contracts in the dropdown
-            // This is the workflow guard — Expired/OnHold contracts
-            // are filtered out here so the user cannot select them
-            var activeContracts = await _context.Contracts
-                .Include(c => c.Client)
-                .Where(c => c.Status == ContractStatus.Active)
-                .ToListAsync();
+            // Get only Active contracts from the API
+            var contracts = await ApiGet<List<Contract>>(
+                "api/contracts?status=Active")
+                ?? new List<Contract>();
 
             ViewBag.Contracts = new SelectList(
-                activeContracts,
-                "Id",
-                "ServiceLevel");
-
-            // Pass the rate to the view so JavaScript can use it
+                contracts, "Id", "ServiceLevel");
             ViewBag.ExchangeRate = rate;
-
             return View();
         }
 
-        
+        // POST: /ServiceRequests/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ServiceRequest request)
@@ -66,59 +51,70 @@ namespace GLMS.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                //WORKFLOW GUARD
-                // Double-check on the server side — never trust
-                // only the client (browser) to enforce rules
-                var contract = await _context.Contracts
-                    .FindAsync(request.ContractId);
+                // Get the live rate at time of saving
+                var rateResult = await ApiGet<CurrencyRateResult>(
+                    "api/currency/rate");
+                request.ExchangeRate = rateResult?.Rate ?? 18.50m;
 
-                if (contract == null)
+                // Send to API — the API handles workflow guard
+                // and ZAR calculation
+                var response = await ApiPost(
+                    "api/servicerequests", request);
+
+                if (response.IsSuccessStatusCode)
+                    return RedirectToAction(nameof(Index));
+
+                // Read the error message from the API response
+                var errorJson = await response.Content
+                    .ReadAsStringAsync();
+
+                try
+                {
+                    var errorObj = JsonSerializer.Deserialize
+                        <ApiErrorResponse>(errorJson,
+                        new JsonSerializerOptions
+                        { PropertyNameCaseInsensitive = true });
+
+                    ModelState.AddModelError("",
+                        errorObj?.Message
+                        ?? "Failed to save request.");
+                }
+                catch
                 {
                     ModelState.AddModelError("",
-                        "Selected contract does not exist.");
-                    return await ReloadCreateView();
+                        "Failed to save request. Please try again.");
                 }
-
-                if (contract.Status == ContractStatus.Expired ||
-                    contract.Status == ContractStatus.OnHold)
-                {
-                    // Block the request — show a clear error message
-                    ModelState.AddModelError("",
-                        $"Cannot raise a service request against a " +
-                        $"contract that is {contract.Status}. " +
-                        $"Only Active contracts are allowed.");
-                    return await ReloadCreateView();
-                }
-
-                //CURRENCY CALCULATION
-                // Fetch the live rate at the moment of saving
-                var rate = await _currencyService.GetUsdToZarRateAsync();
-                request.ExchangeRate = rate;
-                request.CostZAR = _currencyService
-                    .ConvertUsdToZar(request.CostUSD, rate);
-                request.DateRaised = DateTime.Now;
-
-                _context.ServiceRequests.Add(request);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
             }
 
-            return await ReloadCreateView();
+            await ReloadCreateView();
+            return View(request);
         }
 
-        // Helper — reloads the Create view with dropdowns intact
-        private async Task<IActionResult> ReloadCreateView()
+        private async Task ReloadCreateView()
         {
-            var rate = await _currencyService.GetUsdToZarRateAsync();
-            var activeContracts = await _context.Contracts
-                .Include(c => c.Client)
-                .Where(c => c.Status == ContractStatus.Active)
-                .ToListAsync();
+            var rateResult = await ApiGet<CurrencyRateResult>(
+                "api/currency/rate");
+            var rate = rateResult?.Rate ?? 18.50m;
+
+            var contracts = await ApiGet<List<Contract>>(
+                "api/contracts?status=Active")
+                ?? new List<Contract>();
 
             ViewBag.Contracts = new SelectList(
-                activeContracts, "Id", "ServiceLevel");
+                contracts, "Id", "ServiceLevel");
             ViewBag.ExchangeRate = rate;
-            return View();
         }
+    }
+
+    // Maps the JSON response from api/currency/rate
+    public class CurrencyRateResult
+    {
+        public decimal Rate { get; set; }
+    }
+
+    // Maps error messages from the API
+    public class ApiErrorResponse
+    {
+        public string Message { get; set; } = string.Empty;
     }
 }

@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLMS.Web", "GLMS.Web\GLMS.W
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLMS.Tests", "GLMS.Tests\GLMS.Tests.csproj", "{3310068A-CFFA-4D8C-82C3-7200F07D1C23}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLMS.Api", "GLMS.Api\GLMS.Api.csproj", "{A0389D69-3765-4D34-89D5-B8B4DD4B4C99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +28,10 @@ Global
 		{3310068A-CFFA-4D8C-82C3-7200F07D1C23}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3310068A-CFFA-4D8C-82C3-7200F07D1C23}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3310068A-CFFA-4D8C-82C3-7200F07D1C23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0389D69-3765-4D34-89D5-B8B4DD4B4C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0389D69-3765-4D34-89D5-B8B4DD4B4C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0389D69-3765-4D34-89D5-B8B4DD4B4C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0389D69-3765-4D34-89D5-B8B4DD4B4C99}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,27 +1,48 @@
-using GLMS.Web.Data;
-using GLMS.Web.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using GLMS.Web.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register GlmsDbContext with SQL Server
+// Keep existing DbContext
 builder.Services.AddDbContext<GlmsDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddControllersWithViews();
+// Register the API base URL as a singleton so every controller uses it
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"]
+                 ?? "http://localhost:5043";
 
-builder.Services.AddHttpClient<CurrencyService>();
+// Register named HttpClient with SSL bypass
+builder.Services.AddHttpClient("GLMSApi", client =>
+{
+    client.BaseAddress = new Uri(apiBaseUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    // Bypass SSL for localhost development
+    ServerCertificateCustomValidationCallback =
+        (message, cert, chain, errors) => true
+});
+
+// Also register a default HttpClient with same SSL bypass
+// This covers any controller that creates a plain HttpClient
+builder.Services.AddHttpClient("default")
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback =
+        (message, cert, chain, errors) => true
+});
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -34,6 +55,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

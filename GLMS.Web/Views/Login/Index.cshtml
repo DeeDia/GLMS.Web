@@ -1,0 +1,58 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Login — GLMS";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white text-center py-3">
+                <h4 class="mb-0">🔐 GLMS Login</h4>
+                <small class="text-muted">TechMove Logistics</small>
+            </div>
+            <div class="card-body p-4">
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success">
+                        @TempData["Success"]
+                    </div>
+                }
+
+                <form method="post" asp-action="Index">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Username</label>
+                        <input type="text" name="username"
+                               class="form-control" required
+                               placeholder="Enter username" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Password</label>
+                        <input type="password" name="password"
+                               class="form-control" required
+                               placeholder="Enter password" />
+                    </div>
+                    <button type="submit"
+                            class="btn btn-dark w-100 py-2">
+                        Login
+                    </button>
+                </form>
+
+                <hr />
+                <div class="text-center">
+                    <small>Don't have an account?</small>
+                    <a asp-action="Register" class="btn btn-sm btn-outline-secondary ms-2">
+                        Register
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
